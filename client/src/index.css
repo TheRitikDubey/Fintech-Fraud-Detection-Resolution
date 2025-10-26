@@ -1,0 +1,9 @@
+/* src/index.css (Tailwind v4) */
+/* Tailwind v4 no longer uses `@tailwind base`/`@tailwind components`.
+	Use the v4-compatible preflight import and `@tailwind utilities` directive. */
+@import "tailwindcss";
+@import "tailwindcss/utilities";
+@import "tailwindcss/preflight";
+@tailwind utilities;
+
+/* Add any global styles below */

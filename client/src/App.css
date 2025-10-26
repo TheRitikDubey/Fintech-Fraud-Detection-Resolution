@@ -1,0 +1,8 @@
+/* src/App.css */
+/* App-specific styles. Tailwind is imported once in `src/index.css`.
+	 Use utility classes in components instead of importing Tailwind here. */
+
+/* Example local styles (optional) */
+.logo {
+	height: 6rem;
+}
