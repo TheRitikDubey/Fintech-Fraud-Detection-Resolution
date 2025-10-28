@@ -1,12 +1,17 @@
 import express from "express";
 import type { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import routes from "./routes/index";
 
 const app: express.Application = express();
 const prisma = new PrismaClient();
 
 app.use(express.json());
 
+// Mount all routes
+app.use(routes);
+
+// Legacy user routes (keeping for backward compatibility)
 // Create user
 app.post("/users", async (req: Request, res: Response) => {
   const { name, email } = req.body as { name?: string; email?: string };

@@ -21,3 +21,17 @@ model User {
   name  String
   email String @unique
 }
+
+model Transaction {
+  id         String   @id @default(cuid())
+  customerId String
+  txnId      String
+  amount     Decimal
+  currency   String
+  status     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@unique([customerId, txnId])
+  @@index([customerId, createdAt])
+}
