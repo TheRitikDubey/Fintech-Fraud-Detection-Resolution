@@ -2,10 +2,19 @@ import express from "express";
 import type { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import routes from "./routes/index";
+// @ts-ignore - express-fileupload doesn't ship TypeScript declarations in this project setup.
+import fileUpload from "express-fileupload";
 
 const app: express.Application = express();
 const prisma = new PrismaClient();
 
+app.use(
+  fileUpload({
+    limits: { fileSize: 5 * 1024 * 1024 },
+    abortOnLimit: true
+  })
+);
+app.use(express.text({ type: ["text/csv", "application/csv", "application/vnd.ms-excel", "text/plain"] }));
 app.use(express.json());
 
 // Mount all routes
