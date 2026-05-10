@@ -1,0 +1,151 @@
+.sidebar {
+  width: 250px;
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  transition: width var(--transition-normal);
+  z-index: 10;
+}
+
+.sidebar.closed {
+  width: 80px;
+}
+
+.sidebar-header {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.sidebar.closed .sidebar-header {
+  justify-content: center;
+  padding: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: var(--brand-primary-light);
+  border-radius: var(--radius-md);
+}
+
+.brand-text h2 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.brand-text span {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  letter-spacing: 0.5px;
+}
+
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  transition: background-color var(--transition-fast);
+}
+
+.sidebar.closed .toggle-btn {
+  display: none; /* Hide toggle button when closed, or keep it. Actually we need a way to open it. */
+}
+
+/* Let's refine the toggle button when closed */
+.sidebar.closed .sidebar-header {
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+.sidebar.closed .toggle-btn {
+  display: flex;
+  position: absolute;
+  right: -14px;
+  top: 21px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+.toggle-btn:hover {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 12px;
+  overflow-y: auto;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 14px;
+  transition: all var(--transition-fast);
+}
+
+.sidebar.closed .nav-item a {
+  justify-content: center;
+  padding: 10px;
+}
+
+.nav-item a:hover {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+.nav-item.active a {
+  background-color: var(--brand-primary-light);
+  color: var(--brand-primary);
+}
+
+.nav-item.active .nav-icon {
+  color: var(--brand-primary);
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-footer {
+  padding: 20px 12px;
+  border-top: 1px solid var(--border-subtle);
+}

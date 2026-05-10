@@ -1,0 +1,23 @@
+.app-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left var(--transition-normal);
+  overflow: hidden; /* Header and Content area handle their own scroll */
+}
+
+/* When sidebar is fixed absolute, we might need margin, but here we can just let flex handle it if sidebar is part of flex flow. 
+   We will make sidebar position relative in flex flow */
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
