@@ -1,18 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* Tailwind v4 Import */
+@import "tailwindcss";
+
 :root {
-  /* Premium Light Theme Color Palette */
-  --bg-primary: #F8FAFC; /* Soft slate background */
-  --bg-surface: #FFFFFF; /* Crisp white cards */
+  /* Premium Light Theme Color Palette - Restored for Vanilla CSS compatibility */
+  --bg-primary: #F8FAFC; 
+  --bg-surface: #FFFFFF; 
   --bg-surface-hover: #F1F5F9;
   
-  --text-primary: #0F172A; /* Deep slate */
-  --text-secondary: #64748B; /* Cool gray */
+  --text-primary: #0F172A; 
+  --text-secondary: #64748B; 
   --text-tertiary: #94A3B8;
   
-  --brand-primary: #004DFF; /* Vibrant Blue */
+  --brand-primary: #004DFF; 
   --brand-primary-hover: #003ECC;
-  --brand-primary-light: #EFF4FF; /* For active sidebar items */
+  --brand-primary-light: #EFF4FF; 
   
   --border-subtle: #E2E8F0;
   --border-strong: #CBD5E1;
@@ -37,27 +40,37 @@
   
   --transition-fast: 150ms ease-in-out;
   --transition-normal: 250ms ease-in-out;
-}
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Inter', sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Layout Classes */
-.app-container {
-  display: flex;
-  min-height: 100vh;
-  overflow: hidden;
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-hover: var(--bg-surface-hover);
+  
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-hover: var(--brand-primary-hover);
+  --color-brand-primary-light: var(--brand-primary-light);
+  
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  
+  --color-status-success: var(--status-success);
+  --color-status-success-bg: var(--status-success-bg);
+  --color-status-warning: var(--status-warning);
+  --color-status-warning-bg: var(--status-warning-bg);
+  --color-status-danger: var(--status-danger);
+  --color-status-danger-bg: var(--status-danger-bg);
+  --color-status-info: var(--status-info);
+  --color-status-info-bg: var(--status-info-bg);
 }
 
 /* Scrollbar styling */
@@ -79,17 +92,18 @@ body {
   background: var(--text-tertiary);
 }
 
-/* Base button reset */
-button {
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: inherit;
-  color: inherit;
+/* Add some layout reset just in case Preflight is messing with flex layouts in my original vanilla CSS */
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
-
 a {
   text-decoration: none;
   color: inherit;
+}
+button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
