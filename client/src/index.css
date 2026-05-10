@@ -1,9 +1,95 @@
-/* src/index.css (Tailwind v4) */
-/* Tailwind v4 no longer uses `@tailwind base`/`@tailwind components`.
-	Use the v4-compatible preflight import and `@tailwind utilities` directive. */
-@import "tailwindcss";
-@import "tailwindcss/utilities";
-@import "tailwindcss/preflight";
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* Add any global styles below */
+:root {
+  /* Premium Light Theme Color Palette */
+  --bg-primary: #F8FAFC; /* Soft slate background */
+  --bg-surface: #FFFFFF; /* Crisp white cards */
+  --bg-surface-hover: #F1F5F9;
+  
+  --text-primary: #0F172A; /* Deep slate */
+  --text-secondary: #64748B; /* Cool gray */
+  --text-tertiary: #94A3B8;
+  
+  --brand-primary: #004DFF; /* Vibrant Blue */
+  --brand-primary-hover: #003ECC;
+  --brand-primary-light: #EFF4FF; /* For active sidebar items */
+  
+  --border-subtle: #E2E8F0;
+  --border-strong: #CBD5E1;
+  
+  /* Semantic Colors */
+  --status-success: #10B981;
+  --status-success-bg: #D1FAE5;
+  --status-warning: #F59E0B;
+  --status-warning-bg: #FEF3C7;
+  --status-danger: #EF4444;
+  --status-danger-bg: #FEE2E2;
+  --status-info: #3B82F6;
+  --status-info-bg: #DBEAFE;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+  
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Layout Classes */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Base button reset */
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

@@ -1,0 +1,67 @@
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.badge-pill.success {
+  background-color: var(--status-success-bg);
+  color: #065F46; /* darker green for text */
+}
+
+.badge-pill.warning {
+  background-color: var(--status-warning-bg);
+  color: #92400E; /* darker amber for text */
+}
+
+.badge-pill.danger {
+  background-color: var(--status-danger-bg);
+  color: #991B1B; /* darker red for text */
+}
+
+.badge-pill.default {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-secondary);
+}
+
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.risk-badge .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.risk-badge.success .dot { background-color: var(--status-success); }
+.risk-badge.warning .dot { background-color: var(--status-warning); }
+.risk-badge.danger .dot { background-color: var(--status-danger); }
+
+.risk-content {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.risk-content .score {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.risk-content .label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.risk-badge.success .risk-content { color: var(--status-success); }
+.risk-badge.warning .risk-content { color: var(--status-warning); }
+.risk-badge.danger .risk-content { color: var(--status-danger); }
