@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   ArrowRightLeft, 
@@ -20,12 +21,12 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   const navItems = [
-    { name: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-    { name: 'Transactions', icon: <ArrowRightLeft size={20} />, active: true },
-    { name: 'Alerts', icon: <Bell size={20} /> },
-    { name: 'Cases', icon: <Briefcase size={20} /> },
-    { name: 'Reports', icon: <BarChart2 size={20} /> },
-    { name: 'Audit Logs', icon: <History size={20} /> },
+    { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
+    { name: 'Transactions', path: '/transactions', icon: <ArrowRightLeft size={20} /> },
+    { name: 'Alerts', path: '/alerts', icon: <Bell size={20} /> },
+    { name: 'Cases', path: '/cases', icon: <Briefcase size={20} /> },
+    { name: 'Reports', path: '/reports', icon: <BarChart2 size={20} /> },
+    { name: 'Audit Logs', path: '/audit-logs', icon: <History size={20} /> },
   ];
 
   return (
@@ -50,11 +51,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       <nav className="sidebar-nav">
         <ul>
           {navItems.map((item, index) => (
-            <li key={index} className={`nav-item ${item.active ? 'active' : ''}`}>
-              <a href="#">
+            <li key={index} className="nav-item">
+              <NavLink 
+                to={item.path}
+                className={({ isActive }) => isActive ? 'active' : ''}
+              >
                 <span className="nav-icon">{item.icon}</span>
                 {isOpen && <span className="nav-label">{item.name}</span>}
-              </a>
+              </NavLink>
             </li>
           ))}
         </ul>
@@ -65,11 +69,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           <span className="nav-icon"><Settings size={20} /></span>
           {isOpen && <span className="nav-label">Settings</span>}
         </a>
-        {isOpen && (
-          <div className="system-status-container">
-             {/* Note: In the design, status is at the bottom of the main content area, but putting a compact one here is fine, or we can leave it to the main content. The image shows the system status at the bottom of the entire page or sidebar. It spans across the bottom. */}
-          </div>
-        )}
       </div>
     </aside>
   );
