@@ -1,0 +1,97 @@
+.overview-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .overview-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .overview-cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.overview-card {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-wrapper.blue-bg { background-color: var(--brand-primary-light); }
+.icon-wrapper.red-bg { background-color: var(--status-danger-bg); }
+.icon-wrapper.emerald-bg { background-color: var(--status-success-bg); }
+.icon-wrapper.amber-bg { background-color: var(--status-warning-bg); }
+
+.icon-blue { color: var(--brand-primary); }
+.icon-red { color: var(--status-danger); }
+.icon-emerald { color: var(--status-success); }
+.icon-amber { color: var(--status-warning); }
+
+.trend-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.trend-badge.success {
+  background-color: var(--status-success-bg);
+  color: #059669; /* emerald-600 */
+}
+
+.trend-badge.danger {
+  background-color: var(--status-danger-bg);
+  color: #DC2626; /* red-600 */
+}
+
+.trend-badge.warning {
+  background-color: var(--status-warning-bg);
+  color: #D97706; /* amber-600 */
+}
+
+.card-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-value {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--text-primary);
+}

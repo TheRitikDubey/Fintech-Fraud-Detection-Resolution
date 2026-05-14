@@ -1,0 +1,101 @@
+.fraud-chart-container {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.fraud-chart-container h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+}
+
+.progress-bars-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.progress-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 8px;
+}
+
+.progress-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress-value {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.progress-value.text-primary { color: var(--text-primary); }
+.progress-value.text-danger { color: var(--status-danger); }
+
+.progress-track {
+  width: 100%;
+  background-color: var(--bg-surface-hover);
+  border-radius: var(--radius-full);
+  height: 8px;
+}
+
+.progress-fill {
+  height: 8px;
+  border-radius: var(--radius-full);
+}
+
+.progress-fill.fill-blue { background-color: var(--brand-primary); }
+.progress-fill.fill-red { background-color: var(--status-danger); }
+
+.fraud-stats-container {
+  display: flex;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.stat-box {
+  flex: 1;
+  background-color: var(--bg-surface-hover);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  border: 1px solid var(--border-subtle);
+}
+
+.stat-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stat-label.text-danger { color: #FCA5A5; /* red-300 */ }
+
+.stat-number {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
