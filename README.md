@@ -1,44 +1,100 @@
-# 🧠 Internal Support System – Transaction Intelligence Dashboard
+# Sentinel Support — Fintech Transaction Alert System
 
-A production-ready **full-stack system** built for internal support agents to:
+A full-stack support console where admins ingest customer transaction batches (CSV/JSON),
+the backend scores each transaction against that customer's historical behaviour using a
+**rank-order algorithm**, and significant deviations become **alerts** that support agents
+triage and resolve (freeze card, open dispute, mark false positive) — with every action
+audited, rate-limited, PII-redacted, and observable.
 
-- 🧾 **Ingest and explore** transaction data (bulk or live stream)
-- 🤖 **Generate AI insights** and human-readable fraud reports
-- ⚙️ **Auto-resolve cases** like freezing cards, opening disputes, or contacting customers
-- 🧩 **Operate locally/offline** with deterministic rule-based fallbacks
-- 📊 **Emit metrics, traces, and audit logs** for transparency and compliance
+This is a scoped-down, honest build: it keeps the engineering spine
+(ingestion → scoring → alerts → triage → audit) and deliberately drops any multi-agent
+LLM layer.
 
-This project is designed with **production thinking**, yet fully runnable on a **single machine using Docker Compose** (no cloud dependency).
+## Architecture
 
----
+```
+                  ┌──────────────┐      ┌──────────────────────────────┐
+  CSV / JSON ───▶ │  POST /api/  │ ───▶ │  ingest: dedupe + idempotency │
+                  │   ingest     │      │  → rank-order scoring         │
+                  └──────────────┘      │  → alerts (score ≥ threshold) │
+                                        └──────────────┬───────────────┘
+   ┌──────────────┐   read APIs (keyset)               │
+   │  web (React) │ ◀──────────────────────────────────┤
+   │  /alerts     │   GET /api/alerts, /transactions    │
+   │  /customer   │   POST /api/action/*  (X-API-Key)   ▼
+   └──────────────┘                          ┌────────────────────┐
+                                             │ Postgres (Prisma)  │
+        Redis ── idempotency · rate limit    │ + case_events audit│
+                                             └────────────────────┘
+```
 
-## 🧱 Tech Stack
+## Tech stack
 
-| Layer | Technology |
-|-------|-------------|
-| **Frontend** | React + TypeScript (Vite) + Tailwind CSS |
-| **Backend** | Node.js + Express + TypeScript |
-| **Database** | PostgreSQL (via Prisma ORM) |
-| **Cache & Jobs** | Redis |
-| **Infra** | Docker Compose (pg + redis + api + web) |
-| **Optional AI** | LLM agent behind a feature flag, with deterministic fallback |
+| Layer        | Technology                                   |
+|--------------|----------------------------------------------|
+| Frontend     | React + TypeScript + Vite + Tailwind CSS     |
+| Backend      | Node.js + Express + TypeScript (strict, Zod) |
+| Database     | PostgreSQL via Prisma                         |
+| Cache/Queue  | Redis (idempotency + rate limiting)          |
+| Infra        | Docker Compose (postgres + redis + api + web)|
 
----
+## Repo layout
 
-## ⚡ Features
+Independent packages (each self-contained with its own lockfile), orchestrated from the root.
 
-- 📥 **Transaction ingestion:** Upload JSON or stream data
-- 🧮 **Rule-based + AI insights:** Detect anomalies and fraud patterns
-- 🧰 **Multi-agent pipeline:** Ingest → Analyze → Decide → Act → Audit
-- 🧍 **Agent dashboard:** Review cases, approve/override actions
-- 🕵️ **Deterministic offline mode:** Works without network or external API
-- 🧾 **Audit + metrics:** Every decision logged and traceable
+```
+.
+├── api/        # Express + Prisma backend   (was: server/)
+├── web/        # React + Vite frontend      (was: client/)
+├── fixtures/   # known-fraud / known-legit / sample batches
+├── scripts/    # data generator, seed, eval harness
+├── http/       # sentinel.http — HTTP collection for every endpoint
+├── .env.example
+└── package.json  # root orchestration scripts (npm --prefix)
+```
 
----
+> **Note:** `web/` and `api/` were previously named `client/` and `server/`; renamed via
+> `git mv` to match the project brief (history preserved).
 
-## 🚀 Quick Start
+## Quick start
 
 ```bash
-git clone https://github.com/<your-username>/internal-support-system.git
-cd internal-support-system
-docker-compose up --build
+# 1. install both packages
+npm run install:all
+
+# 2. configure env (copy template, set DATABASE_URL / REDIS_URL)
+cp .env.example api/.env
+
+# 3. apply migrations, then run api + web
+npm run migrate
+npm run dev:api    # in one terminal
+npm run dev:web    # in another
+```
+
+> Docker Compose (one-command bring-up) lands once the `api` and `web` images are built;
+> until then, run the two `dev:*` scripts above against a local Postgres + Redis.
+
+## Root scripts
+
+| Script                 | What it does                                      |
+|------------------------|---------------------------------------------------|
+| `npm run install:all`  | Install deps in `api` and `web`                   |
+| `npm run dev:api`      | Start the API in watch mode                       |
+| `npm run dev:web`      | Start the Vite dev server                         |
+| `npm run build`        | Typecheck + build both packages                   |
+| `npm run migrate`      | `prisma migrate dev` in `api`                     |
+| `npm run seed`         | Seed customers/cards/accounts/alerts *(Step 9)*   |
+| `npm run eval`         | Precision/recall eval of the scoring algo *(Step 10)* |
+
+## Build order
+
+1. Schema + Prisma migrations
+2. Ingestion endpoint (idempotency + dedupe)
+3. Scoring wired into ingestion → alerts
+4. Read APIs (keyset pagination)
+5. Alerts route + triage drawer
+6. Action endpoints + audit logging
+7. Customer detail page
+8. Metrics + structured logs + rate limiting + PII redaction
+9. Fixtures + seed scripts
+10. Eval harness
