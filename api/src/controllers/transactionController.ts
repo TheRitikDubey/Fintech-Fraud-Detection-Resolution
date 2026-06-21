@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
 import crypto from "node:crypto";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "../db/client";
 import { transactionBatchSchema, normalizeTxn } from "../schemas/transaction";
+import { transactionsQuerySchema } from "../schemas/query";
+import { decodeCursor, encodeCursor } from "../lib/cursor";
+import { toTransactionDTO, toAlertDTO } from "../lib/dto";
 import { scoreAndCreateAlerts } from "../scoring/scoreAndAlert";
 
 interface TransactionPayload {
@@ -16,13 +20,6 @@ interface TransactionPayload {
   merchant?: string;
   country?: string;
   city?: string;
-}
-
-interface PaginationQuery {
-  from?: string;
-  to?: string;
-  cursor?: string;
-  limit?: string;
 }
 
 interface UploadedFileLike {
@@ -281,88 +278,74 @@ export const ingestTransactions = async (req: Request, res: Response) => {
   }
 };
 
-export const getCustomerTransactions = async (req: Request, res: Response) => {
+/**
+ * Keyset-paginated transactions. Drives both:
+ *   GET /api/customer/:id/transactions  (customerId from route param)
+ *   GET /api/transactions               (optional ?customerId= filter)
+ * Orders by (ts DESC, id DESC) using the (customerId, ts DESC) index; returns
+ * { items, nextCursor }. nextCursor is null on the last page.
+ */
+export const listTransactions = async (req: Request, res: Response) => {
   try {
-    const { id: customerId } = req.params;
-    const { from, to, cursor, limit = "50" }: PaginationQuery = req.query;
-
-    if (!customerId) {
-      return res.status(400).json({ 
-        error: "Customer ID is required" 
+    const parsed = transactionsQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: "Invalid query parameters",
+        issues: parsed.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })),
       });
     }
+    const { limit, cursor, from, to } = parsed.data;
+    const customerId = req.params.id ?? parsed.data.customerId;
 
-    const limitNum = parseInt(limit, 10);
-    if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
-      return res.status(400).json({ 
-        error: "Limit must be a number between 1 and 100" 
-      });
-    }
-    // console.log("T",customerId);
-    
-    // Build where clause for date filtering
-    const whereClause: any = {
-      customerId: customerId
-    };
-
+    const where: Prisma.TransactionWhereInput = {};
+    if (customerId) where.customerId = customerId;
     if (from || to) {
-      whereClause.createdAt = {};
-      if (from) {
-        whereClause.createdAt.gte = new Date(from);
-      }
-      if (to) {
-        whereClause.createdAt.lte = new Date(to);
-      }
+      where.ts = {};
+      if (from) where.ts.gte = from;
+      if (to) where.ts.lte = to;
     }
-
-    // Build cursor-based pagination
-    const orderBy: any = {
-      createdAt: 'desc'
-    };
 
     if (cursor) {
-      whereClause.createdAt = {
-        ...whereClause.createdAt,
-        lt: new Date(cursor)
-      };
+      const decoded = decodeCursor(cursor);
+      if (!decoded) return res.status(400).json({ error: "Invalid cursor" });
+      const boundary = new Date(decoded.value);
+      where.AND = [
+        { OR: [{ ts: { lt: boundary } }, { ts: boundary, id: { lt: decoded.id } }] },
+      ];
     }
 
-    // Fetch transactions with keyset pagination
-    // #TODO: Add proper whereClause back when testing is done
-    const transactions = await prisma.transaction.findMany({
-      // where: whereClause,
-      orderBy: orderBy,
-      take: limitNum + 1, // Take one extra to check if there are more records
+    const rows = await prisma.transaction.findMany({
+      where,
+      orderBy: [{ ts: "desc" }, { id: "desc" }],
+      take: limit + 1,
     });
 
-    // Check if there are more records
-    const hasMore = transactions.length > limitNum;
-    const nextCursor = hasMore ? transactions[limitNum - 1].createdAt.toISOString() : null;
+    const hasMore = rows.length > limit;
+    const page = hasMore ? rows.slice(0, limit) : rows;
+    const last = page[page.length - 1];
+    const nextCursor = hasMore && last ? encodeCursor(last.ts.toISOString(), last.id) : null;
 
-    // Remove the extra record if it exists
-    const resultTransactions = hasMore ? transactions.slice(0, limitNum) : transactions;
-
-    // BigInt is not JSON-serializable; expose amountCents as a string. (Step 4 reworks
-    // this endpoint with proper keyset pagination + a typed response serializer.)
-    const serialized = resultTransactions.map((txn) => ({
-      ...txn,
-      amountCents: txn.amountCents.toString()
-    }));
-
-    res.json({
-      transactions: serialized,
-      pagination: {
-        hasMore,
-        nextCursor,
-        limit: limitNum,
-        count: resultTransactions.length
-      }
-    });
-
+    return res.json({ items: page.map(toTransactionDTO), nextCursor });
   } catch (error) {
-    console.error("Error fetching customer transactions:", error);
-    res.status(500).json({ 
-      error: "Internal server error while fetching transactions" 
+    console.error("Error listing transactions:", error);
+    return res.status(500).json({ error: "Internal server error while fetching transactions" });
+  }
+};
+
+/** GET /api/transaction/:id — full detail, including the alert's score + reasons. */
+export const getTransaction = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const txn = await prisma.transaction.findUnique({ where: { id }, include: { alert: true } });
+    if (!txn) return res.status(404).json({ error: "Transaction not found" });
+
+    const { alert, ...transaction } = txn;
+    return res.json({
+      ...toTransactionDTO(transaction),
+      alert: alert ? toAlertDTO(alert) : null,
     });
+  } catch (error) {
+    console.error("Error fetching transaction:", error);
+    return res.status(500).json({ error: "Internal server error while fetching transaction" });
   }
 };

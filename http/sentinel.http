@@ -51,7 +51,22 @@ Content-Type: application/json
 
 [{ "customer_id": "cust_003", "id": "txn_bad", "currency": "USD", "country": "US" }]
 
-### ── Step 4 read API (already present, reworked in Step 4) ──────────
+### ── Step 4: Read APIs (keyset pagination) ─────────────────────────
 
-### Get customer transactions (keyset pagination)
-GET {{baseUrl}}/api/customer/cust_001/transactions?limit=50
+### Global transactions list (keyset; optional ?customerId= filter)
+GET {{baseUrl}}/api/transactions?limit=50
+
+### Next page — paste the nextCursor value from the previous response
+GET {{baseUrl}}/api/transactions?limit=50&cursor=PASTE_NEXT_CURSOR
+
+### Customer transactions (date range + keyset)
+GET {{baseUrl}}/api/customer/cust_001/transactions?limit=50&from=2026-06-01&to=2026-06-30
+
+### Transaction detail (includes alert score + reasons)
+GET {{baseUrl}}/api/transaction/PASTE_TRANSACTION_ID
+
+### Alert queue (filter by status + risk, keyset)
+GET {{baseUrl}}/api/alerts?status=OPEN&risk=CRITICAL&limit=50
+
+### Customer summary (top merchants, categories, monthly trend, anomalies)
+GET {{baseUrl}}/api/customer/cust_001/summary
