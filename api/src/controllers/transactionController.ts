@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import crypto from "node:crypto";
+import { prisma } from "../db/client";
+import { transactionBatchSchema, normalizeTxn } from "../schemas/transaction";
+import { scoreAndCreateAlerts } from "../scoring/scoreAndAlert";
 
 interface TransactionPayload {
   customer_id?: string;
@@ -15,19 +16,6 @@ interface TransactionPayload {
   merchant?: string;
   country?: string;
   city?: string;
-}
-
-interface NormalizedTransactionData {
-  customerId: string;
-  txnId: string;
-  amount: number;
-  currency: string;
-  status: string;
-  mcc: string;
-  merchant: string;
-  country: string;
-  city: string;
-  createdAt?: Date;
 }
 
 interface PaginationQuery {
@@ -191,55 +179,14 @@ const getJsonTransactionsFromRequest = (req: Request): TransactionPayload[] | nu
   return null;
 };
 
-const normalizeTransaction = (txn: TransactionPayload, index: number): NormalizedTransactionData => {
-  const displayIndex = index + 1;
-  const customerId = typeof txn.customer_id === "string" ? txn.customer_id.trim() : "";
-  const txnId = typeof txn.id === "string" ? txn.id.trim() : "";
-  const currency = typeof txn.currency === "string" ? txn.currency.trim() : "";
-  const mcc = typeof txn.mcc === "string" ? txn.mcc.trim() : "";
-  const merchant = typeof txn.merchant === "string" ? txn.merchant.trim() : "";
-  const country = typeof txn.country === "string" ? txn.country.trim() : "";
-  const city = typeof txn.city === "string" ? txn.city.trim() : "";
-  const rawAmount = txn.amount_cents ?? txn.amount;
-  const amount = typeof rawAmount === "string" ? Number(rawAmount.trim()) : Number(rawAmount);
-
-  if (!customerId || !txnId || !currency || !mcc || !merchant || !country || !city || !Number.isFinite(amount)) {
-    throw new Error(
-      `Transaction at row ${displayIndex} must include customer_id, id, amount/amount_cents, currency, mcc, merchant, country, and city`
-    );
-  }
-
-  let createdAt: Date | undefined;
-  if (typeof txn.ts === "string" && txn.ts.trim().length > 0) {
-    const parsedDate = new Date(txn.ts);
-    if (Number.isNaN(parsedDate.getTime())) {
-      throw new Error(`Transaction at row ${displayIndex} has invalid ts value: ${txn.ts}`);
-    }
-    createdAt = parsedDate;
-  }
-
-  return {
-    customerId,
-    txnId,
-    amount,
-    currency,
-    status: typeof txn.status === "string" && txn.status.trim().length > 0 ? txn.status.trim() : "SUCCESS",
-    mcc,
-    merchant,
-    country,
-    city,
-    createdAt
-  };
-};
-
 export const ingestTransactions = async (req: Request, res: Response) => {
   try {
     const csvContent = getCsvContentFromRequest(req);
-    let transactions: TransactionPayload[] | null;
+    let rawRecords: TransactionPayload[] | null;
 
-    // Try parsing CSV first if content is available, otherwise fallback to JSON parsing
+    // Try parsing CSV first if content is available, otherwise fall back to JSON parsing.
     try {
-      transactions = csvContent
+      rawRecords = csvContent
         ? parseCsvTransactions(csvContent)
         : getJsonTransactionsFromRequest(req);
     } catch (parseError) {
@@ -247,74 +194,83 @@ export const ingestTransactions = async (req: Request, res: Response) => {
         error: parseError instanceof Error ? parseError.message : "Invalid CSV format"
       });
     }
-    
-    if (!Array.isArray(transactions)) {
-      console.log("Invalid transactions format:", transactions);
-      
+
+    if (!Array.isArray(rawRecords) || rawRecords.length === 0) {
       return res.status(400).json({
-        error: "Provide transactions as JSON array/object or upload a CSV file"
+        error: "Provide transactions as a JSON array/object or upload a CSV file"
       });
     }
 
-    if (transactions.length === 0) {
-      return res.status(400).json({ 
-        error: "No transactions provided" 
-      });
-    }
-
-    let normalizedTransactions: NormalizedTransactionData[];
-    try {
-      normalizedTransactions = transactions.map((txn, index) => normalizeTransaction(txn, index));
-    } catch (validationError) {
+    // Validate the whole batch with Zod; reject on the first failures (capped for readability).
+    const parsed = transactionBatchSchema.safeParse(rawRecords);
+    if (!parsed.success) {
       return res.status(400).json({
-        error: validationError instanceof Error ? validationError.message : "Invalid transaction payload"
+        error: "Transaction validation failed",
+        issues: parsed.error.issues.slice(0, 20).map((issue) => ({
+          path: issue.path.join("."),
+          message: issue.message
+        }))
       });
     }
 
-    // Upsert transactions using Prisma's upsert
-    // #TODO: Optimize bulk upsert if Prisma adds support in future
-    const upsertPromises = normalizedTransactions.map(async (txn) => {
-      return prisma.transaction.upsert({
-        where: {
-          customerId_txnId: {
+    const normalized = parsed.data.map(normalizeTxn);
+
+    // FK now requires the customer to exist. Upsert a stub for any unknown id so ingestion
+    // never fails on a missing customer; real customer details arrive via the Step 9 seed.
+    const customerIds = [...new Set(normalized.map((txn) => txn.customerId))];
+    await prisma.$transaction(
+      customerIds.map((id) =>
+        prisma.customer.upsert({
+          where: { id },
+          update: {},
+          create: { id, name: id, email: `${id}@placeholder.local` }
+        })
+      )
+    );
+
+    // Dedupe upsert on (customerId, txnId).
+    const results = await prisma.$transaction(
+      normalized.map((txn) =>
+        prisma.transaction.upsert({
+          where: {
+            customerId_txnId: { customerId: txn.customerId, txnId: txn.txnId }
+          },
+          update: {
+            amountCents: txn.amountCents,
+            currency: txn.currency,
+            status: txn.status,
+            mcc: txn.mcc,
+            merchant: txn.merchant,
+            country: txn.country,
+            city: txn.city,
+            ts: txn.ts
+          },
+          create: {
             customerId: txn.customerId,
-            txnId: txn.txnId
+            txnId: txn.txnId,
+            amountCents: txn.amountCents,
+            currency: txn.currency,
+            status: txn.status,
+            mcc: txn.mcc,
+            merchant: txn.merchant,
+            country: txn.country,
+            city: txn.city,
+            ts: txn.ts
           }
-        },
-        update: {
-          amount: txn.amount,
-          currency: txn.currency,
-          status: txn.status,
-          mcc: txn.mcc,
-          merchant: txn.merchant,
-          country: txn.country,
-          city: txn.city,
-          createdAt: txn.createdAt,
-          updatedAt: new Date()
-        },
-        create: {
-          customerId: txn.customerId,
-          txnId: txn.txnId,
-          amount: txn.amount,
-          currency: txn.currency,
-          status: txn.status,
-          mcc: txn.mcc,
-          merchant: txn.merchant,
-          country: txn.country,
-          city: txn.city,
-          createdAt: txn.createdAt
-        }
-      });
-    });
+        })
+      )
+    );
 
-    const results = await Promise.all(upsertPromises);
+    // Score newly-upserted transactions and raise alerts. Ingestion has already persisted
+    // the data, so a scoring failure must not fail the request — log and continue.
+    try {
+      await scoreAndCreateAlerts(results);
+    } catch (scoringError) {
+      console.error("Scoring/alerting failed (transactions were still ingested):", scoringError);
+    }
 
-    res.json({
-      accepted: true,
-      message: `Successfully processed ${results.length} transactions`,
-      count: results.length,
-      requestId: "val"
-    });
+    const requestId = crypto.randomUUID();
+    return res.json({ accepted: true, count: results.length, requestId });
 
   } catch (error) {
     console.log("Error details:", error);
@@ -386,8 +342,15 @@ export const getCustomerTransactions = async (req: Request, res: Response) => {
     // Remove the extra record if it exists
     const resultTransactions = hasMore ? transactions.slice(0, limitNum) : transactions;
 
+    // BigInt is not JSON-serializable; expose amountCents as a string. (Step 4 reworks
+    // this endpoint with proper keyset pagination + a typed response serializer.)
+    const serialized = resultTransactions.map((txn) => ({
+      ...txn,
+      amountCents: txn.amountCents.toString()
+    }));
+
     res.json({
-      transactions: resultTransactions,
+      transactions: serialized,
       pagination: {
         hasMore,
         nextCursor,
