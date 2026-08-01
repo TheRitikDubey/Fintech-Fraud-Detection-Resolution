@@ -1,0 +1,11 @@
+[
+  { "customer_id": "demo_cust_1", "id": "demo_t1", "amount_cents": 4200, "currency": "USD", "mcc": "5814", "merchant": "Starbucks", "country": "US", "city": "San Francisco", "ts": "2026-05-01T09:15:00Z" },
+  { "customer_id": "demo_cust_1", "id": "demo_t2", "amount_cents": 8650, "currency": "USD", "mcc": "5411", "merchant": "Whole Foods", "country": "US", "city": "San Francisco", "ts": "2026-05-03T18:40:00Z" },
+  { "customer_id": "demo_cust_1", "id": "demo_t3", "amount_cents": 5200, "currency": "USD", "mcc": "5541", "merchant": "Shell", "country": "US", "city": "San Francisco", "ts": "2026-05-06T08:05:00Z" },
+  { "customer_id": "demo_cust_1", "id": "demo_t4", "amount_cents": 1299, "currency": "USD", "mcc": "4899", "merchant": "Netflix", "country": "US", "city": "San Francisco", "ts": "2026-05-10T12:00:00Z" },
+  { "customer_id": "demo_cust_1", "id": "demo_t5", "amount_cents": 7340, "currency": "USD", "mcc": "5814", "merchant": "Starbucks", "country": "US", "city": "San Francisco", "ts": "2026-05-14T09:25:00Z" },
+  { "customer_id": "demo_cust_1", "id": "demo_t6", "amount_cents": 9990, "currency": "USD", "mcc": "5999", "merchant": "Amazon", "country": "US", "city": "San Francisco", "ts": "2026-05-20T15:10:00Z" },
+  { "customer_id": "demo_cust_1", "id": "demo_t7", "amount_cents": 6100, "currency": "USD", "mcc": "5411", "merchant": "Whole Foods", "country": "US", "city": "San Francisco", "ts": "2026-05-28T19:05:00Z" },
+  { "customer_id": "demo_cust_1", "id": "demo_t8", "amount_cents": 4800, "currency": "USD", "mcc": "5814", "merchant": "Starbucks", "country": "US", "city": "San Francisco", "ts": "2026-06-04T08:50:00Z" },
+  { "customer_id": "demo_cust_1", "id": "demo_anomaly", "amount_cents": 650000, "currency": "USD", "mcc": "5944", "merchant": "Luxury Imports", "country": "RU", "city": "Moscow", "ts": "2026-06-10T03:00:00Z" }
+]
