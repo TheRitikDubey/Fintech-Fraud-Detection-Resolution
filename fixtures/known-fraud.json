@@ -1,0 +1,82 @@
+[
+  {
+    "name": "high-value foreign luxury (RU, 3am)",
+    "history": [
+      { "amountCents": 4500, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-02T09:10:00Z" },
+      { "amountCents": 6800, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-04T18:20:00Z" },
+      { "amountCents": 5200, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-07T08:35:00Z" },
+      { "amountCents": 4100, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-09T09:25:00Z" },
+      { "amountCents": 7300, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-12T17:40:00Z" },
+      { "amountCents": 3900, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-15T09:05:00Z" },
+      { "amountCents": 5600, "merchant": "Amazon", "country": "US", "mcc": "5999", "ts": "2026-05-18T14:15:00Z" },
+      { "amountCents": 4800, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-21T08:50:00Z" }
+    ],
+    "txn": { "amountCents": 500000, "merchant": "Geneva Watches", "country": "RU", "mcc": "5944", "ts": "2026-05-30T03:00:00Z" }
+  },
+  {
+    "name": "foreign high-value (NG, 2am)",
+    "history": [
+      { "amountCents": 4500, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-02T09:10:00Z" },
+      { "amountCents": 6800, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-04T18:20:00Z" },
+      { "amountCents": 5200, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-07T08:35:00Z" },
+      { "amountCents": 4100, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-09T09:25:00Z" },
+      { "amountCents": 7300, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-12T17:40:00Z" },
+      { "amountCents": 3900, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-15T09:05:00Z" },
+      { "amountCents": 5600, "merchant": "Amazon", "country": "US", "mcc": "5999", "ts": "2026-05-18T14:15:00Z" }
+    ],
+    "txn": { "amountCents": 180000, "merchant": "Foreign Bazaar", "country": "NG", "mcc": "5944", "ts": "2026-05-30T02:30:00Z" }
+  },
+  {
+    "name": "foreign luxury (FR, 4am)",
+    "history": [
+      { "amountCents": 4500, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-02T09:10:00Z" },
+      { "amountCents": 6800, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-04T18:20:00Z" },
+      { "amountCents": 5200, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-07T08:35:00Z" },
+      { "amountCents": 4100, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-09T09:25:00Z" },
+      { "amountCents": 7300, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-12T17:40:00Z" },
+      { "amountCents": 3900, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-15T09:05:00Z" }
+    ],
+    "txn": { "amountCents": 120000, "merchant": "Luxe Paris", "country": "FR", "mcc": "5944", "ts": "2026-05-31T04:00:00Z" }
+  },
+  {
+    "name": "foreign high-value (GB, 4am)",
+    "history": [
+      { "amountCents": 4500, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-02T09:10:00Z" },
+      { "amountCents": 6800, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-04T18:20:00Z" },
+      { "amountCents": 5200, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-07T08:35:00Z" },
+      { "amountCents": 4100, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-09T09:25:00Z" },
+      { "amountCents": 7300, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-12T17:40:00Z" },
+      { "amountCents": 3900, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-15T09:05:00Z" }
+    ],
+    "txn": { "amountCents": 250000, "merchant": "London Lux", "country": "GB", "mcc": "5944", "ts": "2026-05-31T04:00:00Z" }
+  },
+  {
+    "name": "high-value foreign online gambling (MT, 4:30am)",
+    "history": [
+      { "amountCents": 4500, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-02T09:10:00Z" },
+      { "amountCents": 6800, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-04T18:20:00Z" },
+      { "amountCents": 5200, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-07T08:35:00Z" },
+      { "amountCents": 4100, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-09T09:25:00Z" },
+      { "amountCents": 7300, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-12T17:40:00Z" },
+      { "amountCents": 3900, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-15T09:05:00Z" },
+      { "amountCents": 5600, "merchant": "Amazon", "country": "US", "mcc": "5999", "ts": "2026-05-18T14:15:00Z" },
+      { "amountCents": 4800, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-21T08:50:00Z" }
+    ],
+    "txn": { "amountCents": 700000, "merchant": "Casino Royale", "country": "MT", "mcc": "7995", "ts": "2026-05-31T04:30:00Z" }
+  },
+  {
+    "name": "card-testing micro-charges (subtle)",
+    "history": [
+      { "amountCents": 4500, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-02T09:10:00Z" },
+      { "amountCents": 6800, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-04T18:20:00Z" },
+      { "amountCents": 5200, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-07T08:35:00Z" },
+      { "amountCents": 4100, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-09T09:25:00Z" },
+      { "amountCents": 150, "merchant": "TestMerch", "country": "US", "mcc": "5999", "ts": "2026-05-31T02:35:00Z" },
+      { "amountCents": 120, "merchant": "TestMerch", "country": "US", "mcc": "5999", "ts": "2026-05-31T02:42:00Z" },
+      { "amountCents": 180, "merchant": "TestMerch", "country": "US", "mcc": "5999", "ts": "2026-05-31T02:50:00Z" },
+      { "amountCents": 110, "merchant": "TestMerch", "country": "US", "mcc": "5999", "ts": "2026-05-31T02:57:00Z" },
+      { "amountCents": 160, "merchant": "TestMerch", "country": "US", "mcc": "5999", "ts": "2026-05-31T03:01:00Z" }
+    ],
+    "txn": { "amountCents": 150, "merchant": "TestMerch", "country": "US", "mcc": "5999", "ts": "2026-05-31T03:05:00Z" }
+  }
+]

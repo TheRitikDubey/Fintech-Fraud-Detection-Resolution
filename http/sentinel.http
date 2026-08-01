@@ -1,0 +1,120 @@
+### Sentinel Support — HTTP collection
+### Base URL (matches api/.env PORT)
+@baseUrl = http://localhost:9529
+
+### Health check
+GET {{baseUrl}}/
+
+### ── Step 8: Observability ─────────────────────────────────────────
+
+### Prometheus metrics (api_request_latency_ms, tool_call_total, rate_limit_block_total)
+GET {{baseUrl}}/metrics
+
+# Rate limit: >5 req/s per client (X-API-Key or IP) → 429 with a Retry-After header.
+
+### ── Step 2: Ingestion ──────────────────────────────────────────────
+
+### Ingest transactions (JSON, idempotent)
+# Reuse the same Idempotency-Key to replay; the prior response is returned verbatim.
+POST {{baseUrl}}/api/ingest/transactions
+Content-Type: application/json
+Idempotency-Key: demo-key-001
+
+[
+  {
+    "customer_id": "cust_001",
+    "id": "txn_1001",
+    "amount_cents": 150000,
+    "currency": "USD",
+    "mcc": "5411",
+    "merchant": "Whole Foods",
+    "country": "US",
+    "city": "San Francisco",
+    "ts": "2026-06-01T10:00:00Z"
+  },
+  {
+    "customer_id": "cust_001",
+    "id": "txn_1002",
+    "amount_cents": 2999,
+    "currency": "USD",
+    "mcc": "5814",
+    "merchant": "Starbucks",
+    "country": "US",
+    "city": "San Francisco"
+  }
+]
+
+### Ingest transactions (CSV upload as raw text)
+POST {{baseUrl}}/api/ingest/transactions
+Content-Type: text/csv
+
+id,customer_id,amount_cents,currency,mcc,merchant,country,city,ts
+txn_2001,cust_002,89900,USD,5732,Best Buy,US,Austin,2026-06-02T14:30:00Z
+txn_2002,cust_002,1250,USD,5812,Chipotle,US,Austin,2026-06-02T19:05:00Z
+
+### Validation failure (missing amount + merchant) → 400 with issues
+POST {{baseUrl}}/api/ingest/transactions
+Content-Type: application/json
+
+[{ "customer_id": "cust_003", "id": "txn_bad", "currency": "USD", "country": "US" }]
+
+### ── Step 4: Read APIs (keyset pagination) ─────────────────────────
+
+### Global transactions list (keyset; optional ?customerId= filter)
+GET {{baseUrl}}/api/transactions?limit=50
+
+### Next page — paste the nextCursor value from the previous response
+GET {{baseUrl}}/api/transactions?limit=50&cursor=PASTE_NEXT_CURSOR
+
+### Customer transactions (date range + keyset)
+GET {{baseUrl}}/api/customer/cust_001/transactions?limit=50&from=2026-06-01&to=2026-06-30
+
+### Transaction detail (includes alert score + reasons)
+GET {{baseUrl}}/api/transaction/PASTE_TRANSACTION_ID
+
+### Alert queue (filter by status + risk, keyset)
+GET {{baseUrl}}/api/alerts?status=OPEN&risk=CRITICAL&limit=50
+
+### Customer summary (top merchants, categories, monthly trend, anomalies)
+GET {{baseUrl}}/api/customer/cust_001/summary
+
+### ── Step 6: Actions (X-API-Key + idempotent + audited) ────────────
+@apiKey = dev-local-key
+
+### Freeze card — no OTP yields PENDING_OTP
+POST {{baseUrl}}/api/action/freeze-card
+Content-Type: application/json
+X-API-Key: {{apiKey}}
+Idempotency-Key: freeze-001
+
+{ "alertId": "PASTE_ALERT_ID" }
+
+### Freeze card — with OTP yields FROZEN
+POST {{baseUrl}}/api/action/freeze-card
+Content-Type: application/json
+X-API-Key: {{apiKey}}
+Idempotency-Key: freeze-002
+
+{ "alertId": "PASTE_ALERT_ID", "otp": "123456" }
+
+### Open dispute → { caseId, status: OPEN }
+POST {{baseUrl}}/api/action/open-dispute
+Content-Type: application/json
+X-API-Key: {{apiKey}}
+Idempotency-Key: dispute-001
+
+{ "alertId": "PASTE_ALERT_ID", "reason": "customer reported unauthorized charge" }
+
+### Mark false positive → alert status FALSE_POSITIVE
+POST {{baseUrl}}/api/action/mark-false-positive
+Content-Type: application/json
+X-API-Key: {{apiKey}}
+Idempotency-Key: fp-001
+
+{ "alertId": "PASTE_ALERT_ID", "note": "known recurring merchant" }
+
+### Missing X-API-Key → 401
+POST {{baseUrl}}/api/action/mark-false-positive
+Content-Type: application/json
+
+{ "alertId": "PASTE_ALERT_ID" }

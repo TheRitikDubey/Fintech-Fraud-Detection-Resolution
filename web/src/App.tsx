@@ -1,0 +1,31 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import AppLayout from './components/Layout/AppLayout';
+import TransactionsLedger from './features/transactions/TransactionsLedger';
+import DashboardOverview from './features/dashboard/DashboardOverview';
+import AlertsQueue from './features/alerts/AlertsQueue';
+import CustomerDetail from './features/customer/CustomerDetail';
+import CasesResolution from './features/cases/CasesResolution';
+import SystemMonitoringReports from './features/reports/SystemMonitoringReports';
+import './index.css';
+
+function App() {
+  return (
+    <Router>
+      <AppLayout>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardOverview />} />
+          <Route path="/transactions" element={<TransactionsLedger />} />
+          <Route path="/alerts" element={<AlertsQueue />} />
+          <Route path="/customer/:id" element={<CustomerDetail />} />
+          <Route path="/cases" element={<CasesResolution />} />
+          <Route path="/reports" element={<SystemMonitoringReports />} />
+          {/* Catch-all */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </AppLayout>
+    </Router>
+  );
+}
+
+export default App;

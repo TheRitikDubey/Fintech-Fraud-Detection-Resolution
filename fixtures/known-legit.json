@@ -1,0 +1,79 @@
+[
+  {
+    "name": "regular coffee run",
+    "history": [
+      { "amountCents": 4500, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-02T09:10:00Z" },
+      { "amountCents": 6800, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-04T18:20:00Z" },
+      { "amountCents": 5200, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-07T08:35:00Z" },
+      { "amountCents": 4100, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-09T09:25:00Z" },
+      { "amountCents": 7300, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-12T17:40:00Z" },
+      { "amountCents": 3900, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-15T09:05:00Z" },
+      { "amountCents": 5600, "merchant": "Amazon", "country": "US", "mcc": "5999", "ts": "2026-05-18T14:15:00Z" },
+      { "amountCents": 4800, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-21T08:50:00Z" }
+    ],
+    "txn": { "amountCents": 4700, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-24T09:15:00Z" }
+  },
+  {
+    "name": "larger but familiar grocery trip",
+    "history": [
+      { "amountCents": 4500, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-02T09:10:00Z" },
+      { "amountCents": 6800, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-04T18:20:00Z" },
+      { "amountCents": 5200, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-07T08:35:00Z" },
+      { "amountCents": 4100, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-09T09:25:00Z" },
+      { "amountCents": 7300, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-12T17:40:00Z" },
+      { "amountCents": 3900, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-15T09:05:00Z" },
+      { "amountCents": 5600, "merchant": "Amazon", "country": "US", "mcc": "5999", "ts": "2026-05-18T14:15:00Z" },
+      { "amountCents": 4800, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-21T08:50:00Z" }
+    ],
+    "txn": { "amountCents": 9500, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-25T18:00:00Z" }
+  },
+  {
+    "name": "first visit to a new grocery store",
+    "history": [
+      { "amountCents": 4500, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-02T09:10:00Z" },
+      { "amountCents": 6800, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-04T18:20:00Z" },
+      { "amountCents": 5200, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-07T08:35:00Z" },
+      { "amountCents": 4100, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-09T09:25:00Z" },
+      { "amountCents": 7300, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-12T17:40:00Z" },
+      { "amountCents": 3900, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-15T09:05:00Z" }
+    ],
+    "txn": { "amountCents": 5200, "merchant": "Trader Joes", "country": "US", "mcc": "5411", "ts": "2026-05-26T12:00:00Z" }
+  },
+  {
+    "name": "coffee while travelling (UK)",
+    "history": [
+      { "amountCents": 4500, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-02T09:10:00Z" },
+      { "amountCents": 6800, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-04T18:20:00Z" },
+      { "amountCents": 5200, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-07T08:35:00Z" },
+      { "amountCents": 4100, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-09T09:25:00Z" },
+      { "amountCents": 7300, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-12T17:40:00Z" },
+      { "amountCents": 3900, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-15T09:05:00Z" }
+    ],
+    "txn": { "amountCents": 5000, "merchant": "Starbucks", "country": "GB", "mcc": "5814", "ts": "2026-05-27T13:00:00Z" }
+  },
+  {
+    "name": "one-off electronics purchase",
+    "history": [
+      { "amountCents": 4500, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-02T09:10:00Z" },
+      { "amountCents": 6800, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-04T18:20:00Z" },
+      { "amountCents": 5200, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-07T08:35:00Z" },
+      { "amountCents": 4100, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-09T09:25:00Z" },
+      { "amountCents": 7300, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-12T17:40:00Z" },
+      { "amountCents": 3900, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-15T09:05:00Z" },
+      { "amountCents": 5600, "merchant": "Amazon", "country": "US", "mcc": "5999", "ts": "2026-05-18T14:15:00Z" }
+    ],
+    "txn": { "amountCents": 30000, "merchant": "Best Buy", "country": "US", "mcc": "5732", "ts": "2026-05-28T15:00:00Z" }
+  },
+  {
+    "name": "late-night snack run",
+    "history": [
+      { "amountCents": 4500, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-02T09:10:00Z" },
+      { "amountCents": 6800, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-04T18:20:00Z" },
+      { "amountCents": 5200, "merchant": "Shell", "country": "US", "mcc": "5541", "ts": "2026-05-07T08:35:00Z" },
+      { "amountCents": 4100, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-09T09:25:00Z" },
+      { "amountCents": 7300, "merchant": "Whole Foods", "country": "US", "mcc": "5411", "ts": "2026-05-12T17:40:00Z" },
+      { "amountCents": 3900, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-15T09:05:00Z" }
+    ],
+    "txn": { "amountCents": 4600, "merchant": "Starbucks", "country": "US", "mcc": "5814", "ts": "2026-05-29T03:00:00Z" }
+  }
+]
