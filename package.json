@@ -12,8 +12,10 @@
     "install:all": "npm --prefix api install && npm --prefix web install",
     "migrate": "npm --prefix api run prisma -- migrate dev",
     "generate": "npm --prefix api run generate",
-    "seed": "echo \"seed: wired in Step 9 (scripts/seed.ts)\" && exit 0",
-    "eval": "echo \"eval: wired in Step 10 (scripts/eval.ts)\" && exit 0"
+    "seed": "cd api && npx tsx ../scripts/seed.ts",
+    "gen:txns": "cd api && npx tsx ../scripts/generate-transactions.ts",
+    "typecheck:scripts": "cd api && npx tsc -p ../scripts/tsconfig.json",
+    "eval": "cd api && npx tsx ../scripts/eval.ts"
   },
   "engines": {
     "node": ">=20"

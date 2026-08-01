@@ -154,8 +154,8 @@ const SystemMonitoringReports = () => {
                     boxShadow: '0 8px 20px rgba(15, 23, 42, 0.08)',
                     fontSize: '12px',
                   }}
-                  formatter={(value: number) => [`${value} incidents`, 'Detected']}
-                  labelFormatter={(label: string) => `Day: ${label}`}
+                  formatter={(value) => [`${value} incidents`, 'Detected']}
+                  labelFormatter={(label) => `Day: ${String(label)}`}
                 />
                 <Line
                   type="monotone"

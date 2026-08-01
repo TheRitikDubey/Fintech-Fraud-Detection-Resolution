@@ -5,6 +5,13 @@
 ### Health check
 GET {{baseUrl}}/
 
+### ── Step 8: Observability ─────────────────────────────────────────
+
+### Prometheus metrics (api_request_latency_ms, tool_call_total, rate_limit_block_total)
+GET {{baseUrl}}/metrics
+
+# Rate limit: >5 req/s per client (X-API-Key or IP) → 429 with a Retry-After header.
+
 ### ── Step 2: Ingestion ──────────────────────────────────────────────
 
 ### Ingest transactions (JSON, idempotent)
@@ -70,3 +77,44 @@ GET {{baseUrl}}/api/alerts?status=OPEN&risk=CRITICAL&limit=50
 
 ### Customer summary (top merchants, categories, monthly trend, anomalies)
 GET {{baseUrl}}/api/customer/cust_001/summary
+
+### ── Step 6: Actions (X-API-Key + idempotent + audited) ────────────
+@apiKey = dev-local-key
+
+### Freeze card — no OTP yields PENDING_OTP
+POST {{baseUrl}}/api/action/freeze-card
+Content-Type: application/json
+X-API-Key: {{apiKey}}
+Idempotency-Key: freeze-001
+
+{ "alertId": "PASTE_ALERT_ID" }
+
+### Freeze card — with OTP yields FROZEN
+POST {{baseUrl}}/api/action/freeze-card
+Content-Type: application/json
+X-API-Key: {{apiKey}}
+Idempotency-Key: freeze-002
+
+{ "alertId": "PASTE_ALERT_ID", "otp": "123456" }
+
+### Open dispute → { caseId, status: OPEN }
+POST {{baseUrl}}/api/action/open-dispute
+Content-Type: application/json
+X-API-Key: {{apiKey}}
+Idempotency-Key: dispute-001
+
+{ "alertId": "PASTE_ALERT_ID", "reason": "customer reported unauthorized charge" }
+
+### Mark false positive → alert status FALSE_POSITIVE
+POST {{baseUrl}}/api/action/mark-false-positive
+Content-Type: application/json
+X-API-Key: {{apiKey}}
+Idempotency-Key: fp-001
+
+{ "alertId": "PASTE_ALERT_ID", "note": "known recurring merchant" }
+
+### Missing X-API-Key → 401
+POST {{baseUrl}}/api/action/mark-false-positive
+Content-Type: application/json
+
+{ "alertId": "PASTE_ALERT_ID" }

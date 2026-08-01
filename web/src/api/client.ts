@@ -8,9 +8,10 @@ import type {
   TransactionDetailDTO,
 } from "./types";
 
-// Configurable via VITE_API_BASE_URL; defaults to the api PORT in api/.env.
-const env = import.meta.env as unknown as { VITE_API_BASE_URL?: string };
+// Configurable via VITE_API_BASE_URL / VITE_API_KEY; defaults match api/.env dev settings.
+const env = import.meta.env as unknown as { VITE_API_BASE_URL?: string; VITE_API_KEY?: string };
 const BASE_URL = env.VITE_API_BASE_URL ?? "http://localhost:9529";
+const API_KEY = env.VITE_API_KEY ?? "dev-local-key";
 
 export class ApiError extends Error {
   readonly status: number;
@@ -36,6 +37,37 @@ async function getJSON<T>(path: string, params?: Record<string, QueryValue>): Pr
     throw new ApiError(res.status, message);
   }
   return (await res.json()) as T;
+}
+
+// Authenticated, idempotent POST for action endpoints.
+async function postAction<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(new URL(path, BASE_URL).toString(), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-API-Key": API_KEY,
+      "Idempotency-Key": crypto.randomUUID(),
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const message = await res.text().catch(() => res.statusText);
+    throw new ApiError(res.status, message);
+  }
+  return (await res.json()) as T;
+}
+
+export interface FreezeCardResult {
+  status: "PENDING_OTP" | "FROZEN";
+}
+export interface OpenDisputeResult {
+  caseId: string;
+  status: string;
+}
+export interface MarkFalsePositiveResult {
+  alertId: string;
+  status: string;
 }
 
 // Type aliases (not interfaces) so they satisfy the Record<string, QueryValue> index signature.
@@ -68,4 +100,13 @@ export const api = {
   listAlerts: (params: AlertListParams = {}) => getJSON<Paginated<AlertDTO>>("/api/alerts", params),
 
   getCustomerSummary: (id: string) => getJSON<CustomerSummaryDTO>(`/api/customer/${id}/summary`),
+
+  freezeCard: (alertId: string, otp?: string) =>
+    postAction<FreezeCardResult>("/api/action/freeze-card", { alertId, otp }),
+
+  openDispute: (alertId: string, reason?: string) =>
+    postAction<OpenDisputeResult>("/api/action/open-dispute", { alertId, reason }),
+
+  markFalsePositive: (alertId: string, note?: string) =>
+    postAction<MarkFalsePositiveResult>("/api/action/mark-false-positive", { alertId, note }),
 };

@@ -20,7 +20,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
-  const [navItemName, setNavItemName] = React.useState("Dashboard");
+  const [, setNavItemName] = React.useState("Dashboard");
   const isActive = (path: string) => {
     return window.location.pathname === path;
   };
