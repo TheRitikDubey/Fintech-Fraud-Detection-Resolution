@@ -13,6 +13,20 @@ const env = import.meta.env as unknown as { VITE_API_BASE_URL?: string; VITE_API
 const BASE_URL = env.VITE_API_BASE_URL ?? "http://localhost:9529";
 const API_KEY = env.VITE_API_KEY ?? "dev-local-key";
 
+// Auth token (JWT) persisted in localStorage.
+const TOKEN_KEY = "sentinel_token";
+export function getToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY);
+}
+export function setToken(token: string | null): void {
+  if (token) localStorage.setItem(TOKEN_KEY, token);
+  else localStorage.removeItem(TOKEN_KEY);
+}
+function authHeaders(): Record<string, string> {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 export class ApiError extends Error {
   readonly status: number;
   constructor(status: number, message: string) {
@@ -31,7 +45,7 @@ async function getJSON<T>(path: string, params?: Record<string, QueryValue>): Pr
       if (value !== undefined) url.searchParams.set(key, String(value));
     }
   }
-  const res = await fetch(url.toString(), { headers: { Accept: "application/json" } });
+  const res = await fetch(url.toString(), { headers: { Accept: "application/json", ...authHeaders() } });
   if (!res.ok) {
     const message = await res.text().catch(() => res.statusText);
     throw new ApiError(res.status, message);
@@ -48,6 +62,7 @@ async function postAction<T>(path: string, body: unknown): Promise<T> {
       Accept: "application/json",
       "X-API-Key": API_KEY,
       "Idempotency-Key": crypto.randomUUID(),
+      ...authHeaders(),
     },
     body: JSON.stringify(body),
   });
@@ -56,6 +71,70 @@ async function postAction<T>(path: string, body: unknown): Promise<T> {
     throw new ApiError(res.status, message);
   }
   return (await res.json()) as T;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+}
+export interface AuthResponse {
+  token: string;
+  user: AuthUser;
+}
+
+// Auth POST (no token/key headers; surfaces the API error message).
+async function postAuth<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(new URL(path, BASE_URL).toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    let message = res.statusText;
+    try {
+      const parsed = (await res.json()) as { error?: string };
+      if (parsed.error) message = parsed.error;
+    } catch {
+      // keep statusText
+    }
+    throw new ApiError(res.status, message);
+  }
+  return (await res.json()) as T;
+}
+
+export interface IngestResult {
+  accepted: boolean;
+  count: number;
+  requestId: string;
+}
+
+// Ingest raw CSV or JSON text. Idempotent via a per-upload key, so a double submit
+// won't double-ingest. Surfaces the API's validation error/issues on failure.
+async function postIngest(body: string, contentType: "text/csv" | "application/json"): Promise<IngestResult> {
+  const res = await fetch(new URL("/api/ingest/transactions", BASE_URL).toString(), {
+    method: "POST",
+    headers: {
+      "Content-Type": contentType,
+      Accept: "application/json",
+      "Idempotency-Key": crypto.randomUUID(),
+      ...authHeaders(),
+    },
+    body,
+  });
+  if (!res.ok) {
+    let message = res.statusText;
+    try {
+      const parsed = (await res.json()) as { error?: string; issues?: { path: string; message: string }[] };
+      if (parsed.error) message = parsed.error;
+      if (parsed.issues && parsed.issues.length > 0) {
+        message += `: ${parsed.issues[0].path} — ${parsed.issues[0].message}`;
+      }
+    } catch {
+      // keep statusText
+    }
+    throw new ApiError(res.status, message);
+  }
+  return (await res.json()) as IngestResult;
 }
 
 export interface FreezeCardResult {
@@ -100,6 +179,13 @@ export const api = {
   listAlerts: (params: AlertListParams = {}) => getJSON<Paginated<AlertDTO>>("/api/alerts", params),
 
   getCustomerSummary: (id: string) => getJSON<CustomerSummaryDTO>(`/api/customer/${id}/summary`),
+
+  ingestTransactions: (body: string, format: "csv" | "json") =>
+    postIngest(body, format === "csv" ? "text/csv" : "application/json"),
+
+  signup: (email: string, password: string) => postAuth<AuthResponse>("/api/auth/signup", { email, password }),
+  login: (email: string, password: string) => postAuth<AuthResponse>("/api/auth/login", { email, password }),
+  me: () => getJSON<{ user: AuthUser }>("/api/auth/me"),
 
   freezeCard: (alertId: string, otp?: string) =>
     postAction<FreezeCardResult>("/api/action/freeze-card", { alertId, otp }),

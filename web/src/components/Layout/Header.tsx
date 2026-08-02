@@ -1,5 +1,6 @@
 import React from 'react';
-import { Search, Bell, HelpCircle } from 'lucide-react';
+import { Search, Bell, HelpCircle, LogOut } from 'lucide-react';
+import { useAuth } from '../../auth/AuthContext';
 import './Header.css';
 
 interface HeaderProps {
@@ -8,6 +9,8 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen }) => {
+  const { user, logout } = useAuth();
+  const displayName = user?.email ?? 'Admin';
   return (
     <header className="header">
       <div className="header-left">
@@ -37,10 +40,16 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isSidebarOpen }) => {
         
         <div className="user-profile">
           <div className="avatar">
-            <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="Admin" />
+            <img
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff`}
+              alt={displayName}
+            />
           </div>
-          <span className="user-name">Admin</span>
+          <span className="user-name">{displayName}</span>
         </div>
+        <button className="icon-btn" onClick={logout} aria-label="Log out" title="Log out">
+          <LogOut size={18} />
+        </button>
       </div>
     </header>
   );
