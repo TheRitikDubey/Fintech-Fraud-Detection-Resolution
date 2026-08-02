@@ -92,18 +92,22 @@
   background: var(--text-tertiary);
 }
 
-/* Add some layout reset just in case Preflight is messing with flex layouts in my original vanilla CSS */
-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-a {
-  text-decoration: none;
-  color: inherit;
-}
-button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
+/* Layout resets for the original vanilla-CSS screens. These MUST live in @layer base:
+   unlayered rules outrank Tailwind's layered utilities, so a bare `button { background:
+   transparent }` would silently override every `bg-*` utility (invisible buttons). */
+@layer base {
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
 }

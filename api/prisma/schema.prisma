@@ -166,3 +166,13 @@ model CaseEvent {
   @@index([caseId, createdAt])
   @@map("case_events")
 }
+
+// Console operators (admins / support agents) who sign in. Distinct from Customer.
+model AppUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  @@map("app_users")
+}

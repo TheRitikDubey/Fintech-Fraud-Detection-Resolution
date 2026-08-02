@@ -1,6 +1,7 @@
 import { env } from "./config/env"; // first: loads + validates .env before anything reads process.env
 import express from "express";
 import type { Request, Response } from "express";
+import cors from "cors";
 import routes from "./routes/index";
 import { requestContext } from "./middleware/requestContext";
 import { metricsMiddleware } from "./middleware/metrics";
@@ -9,6 +10,10 @@ import { register } from "./metrics/registry";
 import fileUpload from "express-fileupload";
 
 const app: express.Application = express();
+
+// CORS first so preflight (OPTIONS) is answered before rate limiting. Open in dev; scope
+// to your web origin(s) via an allowlist in production.
+app.use(cors());
 
 // Correlation id + structured request logging + latency metrics for every request.
 app.use(requestContext);

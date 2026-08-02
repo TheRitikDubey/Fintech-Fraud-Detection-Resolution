@@ -6,7 +6,7 @@ import { api } from "../../../api";
 import type { AlertDTO, Severity, TransactionDTO } from "../../../api";
 import { formatMoney, formatDateTime } from "../../../lib/format";
 import { redactPII } from "../../../lib/redact";
-import { useFocusTrap } from "../hooks/useFocusTrap";
+import { useFocusTrap } from "../../../lib/useFocusTrap";
 
 interface TriageDrawerProps {
   alert: AlertDTO;

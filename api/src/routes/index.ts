@@ -3,6 +3,7 @@ import transactionRoutes from "./transactionRoutes";
 import customerRoutes from "./customerRoutes";
 import alertRoutes from "./alertRoutes";
 import actionRoutes from "./actionRoutes";
+import authRoutes from "./authRoutes";
 import { rateLimit } from "../middleware/rateLimit";
 
 const router = Router();
@@ -11,6 +12,7 @@ const router = Router();
 router.use("/api", rateLimit);
 
 // Mount all route modules under /api
+router.use("/api", authRoutes);
 router.use("/api", transactionRoutes);
 router.use("/api", customerRoutes);
 router.use("/api", alertRoutes);

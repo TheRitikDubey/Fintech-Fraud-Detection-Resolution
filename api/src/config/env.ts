@@ -8,6 +8,8 @@ const envSchema = z.object({
   REDIS_URL: z.string().min(1).optional(),
   PORT: z.coerce.number().int().positive().default(8000),
   API_KEY: z.string().min(1).default("dev-local-key"), // action endpoints; override in api/.env
+  JWT_SECRET: z.string().min(1).default("dev-jwt-secret-change-me"), // auth token signing
+  JWT_EXPIRES_SECONDS: z.coerce.number().int().positive().default(60 * 60 * 24 * 7), // 7 days
   SCORE_THRESHOLD: z.coerce.number().min(0).max(100).default(70),
   HISTORY_DAYS: z.coerce.number().int().positive().default(90),
   RATE_LIMIT_RPS: z.coerce.number().int().positive().default(5),

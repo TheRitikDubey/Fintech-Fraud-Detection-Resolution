@@ -4,6 +4,7 @@ import OverviewCards from './components/OverviewCards';
 import TransactionChart from './components/TransactionChart';
 import FraudChart from './components/FraudChart';
 import RecentAlerts from './components/RecentAlerts';
+import UploadFab from './components/UploadFab';
 import './DashboardOverview.css';
 
 const DashboardOverview: React.FC = () => {
@@ -38,6 +39,8 @@ const DashboardOverview: React.FC = () => {
       </div>
 
       <RecentAlerts />
+
+      <UploadFab />
     </div>
   );
 };
