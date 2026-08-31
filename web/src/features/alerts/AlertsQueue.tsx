@@ -3,7 +3,6 @@ import { Download, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import QueueFilters from "./components/QueueFilters";
 import AlertsTable from "./components/AlertsTable";
-import PriorityCard from "./components/PriorityCard";
 import StatCards from "./components/StatCards";
 import TriageDrawer from "./components/TriageDrawer";
 import { api } from "../../api";
@@ -108,9 +107,6 @@ const AlertsQueue: React.FC = () => {
         {/* Left Sidebar */}
         <div className="lg:col-span-3 flex flex-col gap-2">
           <QueueFilters />
-          <div className="flex-1 min-h-[200px]">
-            <PriorityCard />
-          </div>
         </div>
 
         {/* Right Main Area */}

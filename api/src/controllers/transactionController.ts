@@ -66,7 +66,7 @@ const parseCsvLine = (line: string): string[] => {
   return values;
 };
 
-const parseCsvTransactions = (csvContent: string): TransactionPayload[] => {
+const parseCsvTransactions = (csvContent: string, user: Prisma.AppUserCreateInput): TransactionPayload[] => {
   const normalizedCsv = csvContent.replace(/^\uFEFF/, "");
   const lines = normalizedCsv
     .split(/\r?\n/)
@@ -76,9 +76,13 @@ const parseCsvTransactions = (csvContent: string): TransactionPayload[] => {
   if (lines.length < 2) {
     throw new Error("CSV must include a header row and at least one data row");
   }
+  if(!user){
+    console.log("USER", user);
+    throw new Error("User information is required to associate transactions with a customer");
+  }
 
   const headers = parseCsvLine(lines[0]).map((column) => column.trim().toLowerCase());
-  const requiredHeaders = ["id", "customer_id", "currency", "mcc", "merchant", "country", "city"];
+  const requiredHeaders = ["transaction_id","type", "merchant/receiver", "currency", "location"];
 
   for (const requiredHeader of requiredHeaders) {
     if (!headers.includes(requiredHeader)) {
@@ -103,7 +107,7 @@ const parseCsvTransactions = (csvContent: string): TransactionPayload[] => {
 
     transactions.push({
       id: row.id,
-      customer_id: row.customer_id,
+      customer_id: row.customer_id || user.id,
       amount: row.amount || row.amount_cents,
       amount_cents: row.amount_cents || row.amount,
       currency: row.currency,
@@ -184,7 +188,7 @@ export const ingestTransactions = async (req: Request, res: Response) => {
     // Try parsing CSV first if content is available, otherwise fall back to JSON parsing.
     try {
       rawRecords = csvContent
-        ? parseCsvTransactions(csvContent)
+        ? parseCsvTransactions(csvContent, req.user)
         : getJsonTransactionsFromRequest(req);
     } catch (parseError) {
       return res.status(400).json({
